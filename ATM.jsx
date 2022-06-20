@@ -1,30 +1,42 @@
-const ATMDeposit = ({ onChange }) => {
+const ATMDeposit = ({ onChange, isDeposit }) => {
+  const choice = ["Deposit", "Cash Back"];
+  console.log(`ATM isDeposit: ${isDeposit}`);
   return (
     <label className="label huge">
-      Deposit:
-      <input type="number" onChange={onChange}></input>
-      <input type="submit" value="Submit"></input>
+      <h3> {choice[Number(!isDeposit)]}</h3>
+      <input type="number" width="200" onChange={onChange}></input>
+      <input type="submit" width="200" value="Submit"></input>
     </label>
   );
 };
 
 const Account = () => {
+  let deposit = 0;
   const [totalState, setTotalState] = React.useState(0);
-  let transactionState = 0; // state of this transaction
+  const [isDeposit, setIsDeposit] = React.useState(true);
+
   let status = `Account Balance $ ${totalState}`;
-  console.log("Render Account");
-  const handleChange = event => {
+  console.log(`Account Rendered with isDeposit: ${isDeposit}`);
+  const handleChange = (event) => {
     console.log(`handleChange ${event.target.value}`);
-    transactionState = Number(event.target.value);
+    deposit = Number(event.target.value);
   };
   const handleSubmit = () => {
-    setTotalState(totalState + transactionState);
-    event.preventDefault();
+    let newTotal = isDeposit ? totalState + deposit : totalState - deposit;
+    if (newTotal < 0) {
+      alert("Insufficent Funds");
+      event.preventDefault();
+    } else {
+      setTotalState(newTotal);
+      event.preventDefault();
+    }
   };
   return (
     <form onSubmit={handleSubmit}>
       <h2 id="total">{status}</h2>
-      <ATMDeposit onChange={handleChange}> Deposit</ATMDeposit>
+      <button onClick={() => setIsDeposit(true)}>Deposit</button>
+      <button onClick={() => setIsDeposit(false)}>Cash Back</button>
+      <ATMDeposit onChange={handleChange} isDeposit={isDeposit}></ATMDeposit>
     </form>
   );
 };
